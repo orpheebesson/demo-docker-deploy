@@ -1,0 +1,46 @@
+# .github/workflows/deploy.yml
+
+name: Build, push, and deploy Docker images to the server
+on:
+  push:
+    branches: ["main"]
+
+env:
+  REGISTRY: ghcr.io
+  DOCKER_IMAGE_PRODUCTION_TAG: production
+
+jobs:
+  build-and-push-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        image: [backend, frontend]
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🧑‍💻 Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: ⬆️ Extract metadata for ${{ matrix.image }}
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}-${{ matrix.image }}
+          tags: ${{ env.DOCKER_IMAGE_PRODUCTION_TAG }}
+
+      - name: 🐳 Build and push ${{ matrix.image }} image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          target: ${{ matrix.image }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
