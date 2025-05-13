@@ -1,11 +1,8 @@
 services:
   traefik:
-    # The official v3 Traefik docker image
     image: traefik:v3.3
     container_name: traefik
-    # Enables the web UI and tells Traefik to listen to docker
     command:
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entryPoints.https.address=:443"
@@ -13,26 +10,19 @@ services:
       - "--certificatesresolvers.letsencrypt.acme.email=bessonorphee@gmail.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
-      # The HTTP port
-      - "80:80"
-      # The HTTPS port
       - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
     volumes:
-      # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock"
-      # Create a letsencrypt dir within the folder where the docker-compose file is
       - "./letsencrypt:/letsencrypt"
 
-  whoami:
-    image: traefik/whoami
-    container_name: whoami
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.saas-boilerplate.fr`)"
-      - "traefik.http.routers.whoami.entrypoints=https"
-      - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
+  # whoami:
+  #   image: traefik/whoami
+  #   container_name: whoami
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.whoami.rule=Host(`whoami.saas-boilerplate.fr`)"
+  #     - "traefik.http.routers.whoami.entrypoints=https"
+  #     - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
 
   backend:
     container_name: backend
