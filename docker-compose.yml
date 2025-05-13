@@ -34,6 +34,20 @@ services:
       - "traefik.http.routers.whoami.entrypoints=https"
       - "traefik.http.routers.whoami.tls.certresolver=letsencrypt"
 
+  backend:
+    container_name: backend
+    image: ghcr.io/orpheebesson/demo-docker-deploy-backend:production
+    restart: always
+    env_file:
+      - path: ./configurations/backend/.env
+    ports:
+      - 3333:3333
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.demo-docker-deploy.saas-boilerplate.fr`)"
+      - "traefik.http.routers.backend.entrypoints=https"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+
   frontend:
     container_name: frontend
     image: ghcr.io/orpheebesson/demo-docker-deploy-frontend:production
