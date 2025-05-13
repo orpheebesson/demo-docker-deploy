@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1 class="home__title">Demo Docker Deploy 🐳</h1>
+    <h1 class="home__title">🐳 Demo Docker Deploy 🐳</h1>
     <div class="home__buttons">
       <NuxtLink
         to="https://github.com/orpheebesson/demo-docker-deploy"
